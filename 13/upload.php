@@ -2,6 +2,10 @@
 include "db.php";
 session_start();
 
+function generatName($filename) {
+    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+    return date("Ymd_His"). rand(0, 50000) . '.' . $extension;
+}
 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -29,9 +33,9 @@ foreach ($_FILES["images"]["name"] as $key => $name) {
         exit;
     }
 
-
-    if(move_uploaded_file($tmp_name, 'images/' . $filename)){
-        $filepath = "images/$filename";
+    $uniqueName = generatName($filename);
+    if(move_uploaded_file($tmp_name, 'images/' . $uniqueName)){
+        $filepath = "images/$uniqueName";
         $pdo->query("INSERT INTO images (path) VALUES ('$filepath')");
     }
     $_SESSION["success"] = "Изображение загружено";
