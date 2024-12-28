@@ -42,16 +42,20 @@ foreach ($_FILES["images"]["name"] as $key => $name) {
     $uniqueName = generateName($name);
     $direction = 'images/' . $uniqueName;
 
-    if (uploadFile($tmp_name, $direction)) {
-        $filePath = "images/$uniqueName";
-        if (!saveDB($pdo, $filePath)) {
-            $_SESSION["error"] = "Ошибка сохранения пути в базу данных";
-        } else {
-            $_SESSION["success"] = "Изображение загружено";
-        }
-    } else {
+    if (!uploadFile($tmp_name, $direction)) {
         $_SESSION["error"] = "Ошибка загрузки файла: $name";
+        header('Location: index.php');
+        exit;
     }
+
+    $filePath = "images/$uniqueName";
+    if (!saveDB($pdo, $filePath)) {
+        $_SESSION["error"] = "Ошибка сохранения пути в базу данных";
+        header('Location: index.php');
+        exit;
+    }
+
+    $_SESSION["success"] = "Изображение загружено";
 }
 
 header('Location: index.php');
